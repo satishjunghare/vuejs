@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+</head>
+<body>
+    <style>
+        .strikeout{
+            text-decoration: line-through;
+        }
+    </style>
+    <div id="app">
+        <h1>{{ header.toLocaleUpperCase() }}</h1>
+        <button v-if="state === 'default'" @click="changeState('edit')">Add Item</button>
+        <button v-else @click="changeState('default')">Cancel</button>
+        <div v-if="state === 'edit'">
+            <input type="text" v-model="newItem" placeholder="Add new item" @keyup.enter="saveItem">
+            <button type="button" :disabled="newItem.length === 0" @click="saveItem">Add</button><br>
+            <span>{{ charactersCount }}/200</span>
+        </div>
+        <ul style="list-style: none; padding: 0;">
+            <li v-for="(item, key) in reversedItems" :class="{strikeout: item.purchased}" @click="togglePurchase(item)">
+                {{ item.name }}
+                <a style="color: red; cursor: pointer;" @click="reversedItems.splice(key,1)">X</a>
+            </li>
+            <p v-if="reversedItems.length === 0">You have no products in your card to purchase!</p>
+        </ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                state: 'default',
+                header: 'Shopping List',
+                newItem: '',
+                items: []
+            },
+            methods: {
+                saveItem: function() {
+                    if(this.newItem != '') {
+                        this.items.push({name: this.newItem, purchased: false});
+                    }
+                    this.newItem = '';
+                },
+                changeState: function(newState) {
+                    this.state = newState;
+                },
+                togglePurchase: function(item) {
+                    item.purchased = !item.purchased;
+                }
+            },
+            computed: {
+                charactersCount() {
+                    return this.newItem.length;
+                },
+                reversedItems() {
+                    return this.items.slice(0).reverse();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
